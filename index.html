@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title -->
+    <title>Weather</title>
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/e920becf4e.js" crossorigin="anonymous"></script>
+    <!-- StyleSheet -->
+    <style>
+        body{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+        button{
+            background-color: rgb(16, 235, 16);
+            color: white;
+            border: none;
+            width: 120px;
+            height: 35px;
+            font-weight: 550;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-left: 7px;
+        }
+        input{
+            width: 190px;
+            height: 30px;
+            border-radius: 0px;
+            border: 1px solid black;
+            border-radius: 10px;
+            background: none;
+            outline: none;
+            padding-left: 15px;
+        }
+        #search{
+            width: 55%;
+            height: 35px;
+            margin: auto;
+            text-align: center;
+        }
+        #weather{
+            width: 60%;
+            height: 110px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(156,302,819,0.9);
+            border: .3px solid black;
+            border-radius: 25px;
+        }
+
+        /* Weather Left */
+        #weather #left{
+            width: 57%;
+            height: 100%;
+            padding-top: 0px;
+        }
+        #left{
+            display: flex;
+        }
+        #left div:nth-child(1){
+            width: 24%;
+            height: 100px;
+            box-sizing: border-box;
+        }
+        #left img{
+            margin-top: -8px;
+            width: 120px;
+            height: 110px;
+        }
+        #left div:nth-child(2){
+            display: flex;
+            width: 70%;
+            height: 100px;
+        }
+        #left h2{
+            font-size: 70px;
+            font-weight: 540;
+            line-height: 5%;
+            margin-top: 45px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        ul li{
+            margin-left: -30px;
+            list-style-type: none;
+            color: #808080;
+            font-size: 13px;
+        }
+
+        /* Weather Right */
+        #weather #right{
+            width: 42%;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: right;
+            padding-right: 25px;
+        }
+        #right p:nth-child(1){
+            font-size: 32px;
+            color: #000;
+            font-weight: 500;
+            letter-spacing: 0px;
+            margin-top: 0px;
+            padding-top: 7px;
+        }
+        #right p:nth-child(2){
+            margin-top: -36px;
+        }
+        #right p:nth-child(3){
+            margin-top: -19px;
+        }
+        p{
+            color: #808080;
+            font-size: 18px;
+        }
+        /* Future Forecaste */
+        #future{
+            width: 90%;
+            height: 180px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(7,1fr);
+            gap: 10px;
+        }
+        #future div{
+            background-color: rgb(184, 186, 189);
+        }
+        #future #maxTemp h4:last-child{
+            color: #808080;
+        }
+        /* Media Queries */
+        @media (max-width:1055px) and (min-width:700px){
+            input{
+                width: 120px;
+            }
+            #weather{
+                display: block;
+                width: 58%;
+                height: 200px;
+            }
+            #weather #left{
+                width: 100%;
+                height: auto;
+                text-align: center;
+            }
+            #weather #right{
+                width: 100%;
+                text-align: center;
+            }
+        }
+        @media (max-width:699px){
+            input{
+                width: 100px;
+            }
+            button{
+                width: 110px;
+                font-weight: 100;
+            }
+            #weather{
+                display: block;
+                width: 80%;
+                height: 200px;
+            }
+            #weather #left{
+                width: 100%;
+                height: auto;
+                text-align: center;
+            }
+            #left div:nth-child(1){
+                width: 26%;
+            }
+
+            #weather #right{
+                width: 100%;
+                text-align: center;
+            }
+            #future{
+                grid-template-columns: repeat(2,1fr);
+                grid-template-rows: repeat(auto,200px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="search">
+            <input type="text" id="city" placeholder="Enter city name">
+            <button onclick="getWeather()">Get Weather</i></button>
+    </div>
+    <p></p>
+    <div id="weather">
+            <div id="left"></div>
+            <div id="right"></div>
+    </div>
+    <p></p>
+    <div id="future"></div>
+    
+</body>
+</html>
+<script>
+
+
+    async function getWeather(){
+        try{
+            let city = document.querySelector("#city").value;
+            if(city.length>0){
+                let KEY = "a6146945b69f197db9de28a24be72707";
+                let res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&cnt=7&units=metric&id=524901&appid=${KEY}`);
+                let data = await res.json();
+                console.log("data",data);
+                weatherData(data);
+            }
+            else{
+                alert("Enter valid city name")
+            }
+
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+
+    function weatherData(data){
+
+        document.getElementById("left").innerHTML = null;
+        document.getElementById("right").innerHTML = null;
+        document.getElementById("future").innerHTML = null;
+        // Left Start---------->
+        let div1 = document.createElement("div");
+
+        let img = document.createElement("img");
+        img.src = `https://openweathermap.org/img/wn/${data.list[0].weather[0].icon}@2x.png`;
+
+        div1.append(img);
+
+        let div2 = document.createElement("div");
+
+        let h2 = document.createElement("h2");
+        h2.innerText = Math.floor(data.list[0].main.temp);
+
+        let symb1 = document.createElement("p");
+        symb1.innerHTML = "&#8451; |";
+        symb1.style.color = "black";
+
+        let symb2 = document.createElement("p");
+        symb2.innerHTML = " &#8457;";
+
+        let ul = document.createElement("ul");
+
+        let pressure = document.createElement("li");
+        pressure.innerHTML = `Pressure: ${data.list[0].main.pressure}`;
+
+        let humidity = document.createElement("li");
+        humidity.innerHTML = `Humidity: ${data.list[0].main.humidity}%`;
+
+        let wind = document.createElement("li");
+        wind.innerHTML = `Wind: ${data.list[0].wind.speed} km/hr &#x2634;`;
+
+        ul.append(pressure,humidity,wind);
+
+        div2.append(h2,symb1,symb2,ul);
+
+        document.getElementById("left").append(div1,div2);
+        // Left End---------->
+
+        // Right Start---------->
+        // Date & Time
+        const time = new Date();
+        const month = time.getMonth();
+        const day = time.getDay();
+        const hour = time.getHours();
+        const min = time.getMinutes();
+
+        // City
+        let city = document.createElement("p");
+        if(data.city.country == "IN"){
+            city.innerText = `${data.city.name}, India`;
+        }
+
+        // Timing
+        let days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+        let timing = document.createElement("p");
+
+        let hourIn12 = 0;
+        let amPM = "AM";
+
+        if(hour>12){
+            hourIn12 = hour%12;
+            amPM = "PM";
+            if(hourIn12<10 && min<10){
+                timing.innerText = `${days[day-1]}, 0${hourIn12}:0${min} ${amPM}`;
+            }
+            else if(hourIn12<10 && min>=10){
+                timing.innerText = `${days[day-1]}, 0${hourIn12}:${min} ${amPM}`;
+            }
+            else if(hourIn12>=10 && min<10){
+                timing.innerText = `${days[day-1]}, ${hourIn12}:0${min} ${amPM}`;
+            }
+            else if(hourIn12>=10 && min>=10){
+                timing.innerText = `${days[day-1]}, ${hourIn12}:${min} ${amPM}`;
+            }
+        }
+        else{
+            if(hour<10 && min<10){
+                timing.innerText = `${days[day-1]}, 0${hour}:0${min} ${amPM}`;
+            }
+            else if(hour<10 && min>=10){
+                timing.innerText = `${days[day-1]}, 0${hour}:${min} ${amPM}`;
+            }
+            else if(hour>=10 && min<10){
+                timing.innerText = `${days[day-1]}, ${hour}:0${min} ${amPM}`;
+            }
+            else if(hour>=10 && min>=10){
+                timing.innerText = `${days[day-1]}, ${hour}:${min} ${amPM}`;
+            }
+        }
+
+        // Weather
+        let weather = document.createElement("p");
+
+        let lower = "abcdefghijklmnopqrstuvwxyz";
+        let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let arr = [];
+        let flag = 0;
+        let str = data.list[0].weather[0].description;
+        
+        for(i=0;i<lower.length;i++){
+            if(str[0] == lower[i]){
+                arr.push(upper[i]);
+                flag = 1;
+                break;
+            }
+        }
+
+        if(flag==1){
+            for(i=1;i<str.length;i++){
+                arr.push(str[i]);
+            }
+            let str1 = arr.join("");
+            weather.innerText = str1;
+        }
+        else{
+            weather.innerText = data.weather[0].description;
+        }
+        
+
+        // Append Right
+        document.getElementById("right").append(city,timing,weather);
+        // Right End---------->
+
+        // Future Forecasting
+        let today = day;
+        data.list.forEach(function(el,index){
+            let div3 = document.createElement("div");
+            let div4 = document.createElement("div");
+            let div5 = document.createElement("div");
+            let div6 = document.createElement("div");
+
+            let day2 = document.createElement("h4");
+
+            
+            day2.innerText = days[today-1];
+            if(today>=7){
+                today = today%7
+            }
+            today++;
+            div4.append(day2);
+            div4.style.textAlign = "center";
+            
+
+            let img1 = document.createElement("img");
+            img1.src = `https://openweathermap.org/img/wn/${el.weather[0].icon}@2x.png`;
+            div5.append(img1);
+            div5.style.textAlign = "center";
+
+            let MaxTemp = document.createElement("h4");
+            MaxTemp.innerHTML = `${Math.floor(el.main.temp_max)}&#8451;`;
+
+            let minTemp = document.createElement("h4");
+            minTemp.innerHTML = `${Math.floor(el.main.temp_min)}&#8451;`;
+            div6.append(MaxTemp,minTemp);
+            div6.style.display = "flex";
+            div6.style.justifyContent = "space-around";
+            div6.setAttribute("id","maxTemp");
+
+            div3.append(div4,div5,div6);
+            document.getElementById("future").append(div3);
+        });
+    }
+
+</script>
